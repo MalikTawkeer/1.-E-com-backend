@@ -1,7 +1,9 @@
-const config = {
-  cloud_name: String(process.env.CLOUD_NAME),
-  api_key: String(process.env.API_KEY),
-  api_secret: String(process.env.API_SECRET),
+import config from "./config.js";
+
+const cloudinaryConfig = {
+  cloud_name: config.cloud_name,
+  api_key: config.api_key,
+  api_secret: config.api_secret,
 };
 
-export default config;
+export default cloudinaryConfig;
