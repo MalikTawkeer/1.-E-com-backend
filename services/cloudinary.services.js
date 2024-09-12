@@ -2,11 +2,12 @@ import { v2 as cloudinary } from "cloudinary";
 import fs, { unlink, unlinkSync } from "fs";
 
 import cloudinaryConfig from "../config/cloudinary.js";
+import { log } from "console";
 
 // CONFIGURE CLOUDINARY
 cloudinary.config(cloudinaryConfig);
 
-// UPLOAD FILES
+// UPLOAD FILE
 const uploadFileOnCloudinary = async (
   localFilePath,
   resourceType = null,
@@ -15,32 +16,20 @@ const uploadFileOnCloudinary = async (
   try {
     if (!localFilePath || !folderName || !resourceType) return null;
 
-    // UPLOAD MULTIPLE FILES
-    if (localFilePath?.length > 1) {
-      for (const path in localFilePath) {
-        const result = await cloudinary.uploader.upload(localFilePath[path], {
-          resource_type: resourceType,
-          folder: folderName,
-        });
-        // RETURN URLS BACK
-        return result;
-      }
-    }
-
     // UPLOAD A SINGLE FILE TO CLOUDINARY
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: resourceType,
       folder: folderName,
     });
 
-    // REMOVE FILE FROM SERVER AFTER UPLOAD
-    fs.unlinkSync(localFilePath);
+    // // REMOVE FILE FROM SERVER AFTER UPLOAD
+    // fs.unlinkSync(localFilePath);
 
     // RETURN IMG URL BACK
     return response?.url;
   } catch (error) {
-    console.log(error);
-    fs.unlinkSync(localFilePath);
+    console.log(error, "cloud err");
+    // fs.unlinkSync(localFilePath);
     return null;
   }
 };
