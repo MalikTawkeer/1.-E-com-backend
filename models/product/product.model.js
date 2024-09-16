@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import deleteRelatedProductData from "./middlewares/product.middleware";
+import deleteRelatedProductData from "./middlewares/product.middleware.js";
 
 const productSchema = new mongoose.Schema({
   name: {
@@ -25,7 +25,11 @@ const productSchema = new mongoose.Schema({
   },
 
   product_images: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "ProductImage" },
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ProductImage",
+      required: true,
+    },
   ],
 
   variants: [
@@ -34,6 +38,11 @@ const productSchema = new mongoose.Schema({
       ref: "ProductVariant",
     },
   ],
+
+  stock: {
+    type: Number,
+    required: true,
+  },
 
   category_id: {
     type: mongoose.Schema.Types.ObjectId,
@@ -49,7 +58,9 @@ const productSchema = new mongoose.Schema({
 });
 
 // Attach hook for cascade deletion
-productSchema.pre("remove", deleteRelatedProductData);
+// / Use the appropriate hooks for deletion
+productSchema.pre("findOneAndDelete", deleteRelatedProductData);
+productSchema.pre("deleteOne", deleteRelatedProductData);
 
 const Product = mongoose.model("Product", productSchema);
 

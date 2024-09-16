@@ -33,7 +33,7 @@ const addCategory = async (req, res) => {
     // Upload category icon to Cloudinary
     if (req.file && req.file.path) {
       category_icon = await uploadFileOnCloudinary(
-        req.file.path, // uploading image path
+        [req.file], // uploading image path
         "image", // file type
         "product_category_images" // folder name
       );
@@ -41,10 +41,13 @@ const addCategory = async (req, res) => {
       // Delete temp img file from server
       await deleteTempFile([req.file]);
 
+      console.log(category_icon);
+
       if (!category_icon)
-        return res
-          .status(503)
-          .json({ message: "Bad happned while uploading category icon!" });
+        return res.status(503).json({
+          message: "Bad happned while uploading category icon!",
+          err: category_icon,
+        });
     }
 
     // Store  category into DB
@@ -165,7 +168,7 @@ const editCategory = async (req, res) => {
     // Upload category icon to Cloudinary
     if (req.file && req.file.path) {
       category_icon = await uploadFileOnCloudinary(
-        req.file.path, // uploading image path
+        req.file, // uploading image path
         "image", // file type
         "product_category_images" // folder name
       );
