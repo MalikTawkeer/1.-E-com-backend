@@ -1,6 +1,13 @@
 import mongoose from "mongoose";
 
 const discountSchema = new mongoose.Schema({
+  discount_name: {
+    type: String, //Summer sale or winter sale
+    required: true,
+    unique: true, // Ensures the email is unique
+    lowercase: true, // Converts the email to lowercase before saving
+    trim: true, // Removes any extra spaces
+  },
   discount_type: {
     type: String, // units | percentage
     required: true,
@@ -12,7 +19,7 @@ const discountSchema = new mongoose.Schema({
   },
 
   valid_until: {
-    type: Date,
+    type: String,
     required: true,
   },
 });
