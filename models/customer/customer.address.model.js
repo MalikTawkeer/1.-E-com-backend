@@ -6,37 +6,12 @@ const addressSchema = new mongoose.Schema({
     required: true,
   },
 
-  pincode: {
-    type: Number,
-    required: true,
-  },
-
-  village: {
-    type: String,
-    required: true,
-  },
-
-  address_type: {
-    type: String,
-    required: true,
-  },
-
-  street_address: {
-    type: String,
-    required: true,
-  },
-
   state: {
     type: String,
     required: true,
   },
 
-  country: {
-    type: String,
-    required: true,
-  },
-
-  customer_id: {
+  customer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Customer",
     required: true,
