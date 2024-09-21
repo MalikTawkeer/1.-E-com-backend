@@ -95,7 +95,7 @@ const addProduct = async (req, res) => {
       admin: admin_id,
     });
     // save the product using session
-    product.save({ session });
+    await product.save({ session });
 
     // Store product images into DB and link to product
     const imageIds = await ProductImage.saveProductImages(
@@ -106,7 +106,7 @@ const addProduct = async (req, res) => {
 
     // Link images with product
     product.product_images.push(...imageIds);
-    product.save({ session });
+    await product.save({ session });
 
     // Push the product id to Admin's products arrary
     admin.products.push(product._id);
@@ -345,7 +345,7 @@ const updateProduct = async (req, res) => {
       );
       // Link images with new product
       product.product_images.push(...imageIds);
-      product.save({ session });
+      await product.save({ session });
     }
 
     // Delete old images from cloudinary
