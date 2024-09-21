@@ -1,11 +1,6 @@
 import mongoose from "mongoose";
 
 const cartSchema = new mongoose.Schema({
-  totalAmount: {
-    type: String,
-    required: true,
-  },
-
   cart_items: [
     { type: mongoose.Schema.Types.ObjectId, required: true, ref: "CartItem" },
   ],
