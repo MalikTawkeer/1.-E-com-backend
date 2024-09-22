@@ -100,7 +100,7 @@ const login = async (req, res) => {
     // Send a success message or user info (without password)
     res.json({
       message: "Login successful",
-      user: { id: user._id, email: user.email, role: user.role },
+      user: { id: user._id, email: user.email, role: user.role, token },
     });
   } catch (error) {
     console.log(error, "Error while logging in customer");
@@ -113,8 +113,13 @@ const login = async (req, res) => {
 // View profile info by cust id
 const viewProfile = async (req, res) => {
   try {
-    const { id } = req.body;
-    const info = await CustomerModel.find()
+    const { id } = req.params;
+
+    // Check if authenticated user id and params id matches
+    if (id !== req?.user?.id)
+      return res.status(404).json("User not permitted!");
+
+    const info = await CustomerModel.findById(id)
       .select("-password -orders -_id")
       .populate({
         path: "address",
@@ -142,6 +147,10 @@ const updateProfile = async (req, res) => {
 
     const { name, email, password, address } = req.body;
     const { id } = req.params;
+
+    // Check if authenticated user id and params id matches
+    if (id !== req?.user?.id)
+      return res.status(404).json("User not permitted!");
 
     // Hash the password
     const salt = await bcrypt.genSalt(10);

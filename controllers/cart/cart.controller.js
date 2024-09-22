@@ -19,7 +19,9 @@ const addToCart = async (req, res) => {
 
     session.startTransaction();
 
-    const { product_id, quantity, price, customer_id } = req.body;
+    const { product_id, quantity, price } = req.body;
+
+    const customer_id = req?.user?.id;
 
     //Check customer exists or not
     const customer = await CustomerModel.findById(customer_id).session(session);
@@ -118,7 +120,8 @@ const removeItemFromCart = async (req, res) => {
 
   try {
     const { cart_item_id } = req.params;
-    const { customer_id } = req.body;
+
+    const customer_id = req?.user?.id;
 
     session.startTransaction();
 
@@ -243,7 +246,7 @@ const updateCartItemQnty = async (req, res) => {
 
 const getCart = async (req, res) => {
   try {
-    const { customer_id } = req.params;
+    const customer_id = req?.user?.id;
 
     const myCart = await CartModel.findOne({ cust_id: customer_id })
       .populate({
