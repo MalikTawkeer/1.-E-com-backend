@@ -148,10 +148,8 @@ const deleteCategory = async (req, res) => {
 const editCategory = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id);
 
     const { name, description } = req.body || [];
-    console.log(name, description);
 
     let category_icon = "";
 
@@ -166,9 +164,9 @@ const editCategory = async (req, res) => {
       return res.status(404).json({ message: "Category does't exist" });
 
     // Upload category icon to Cloudinary
-    if (req.file && req.file.path) {
+    if (req?.file && req?.file?.path) {
       category_icon = await uploadFileOnCloudinary(
-        req.file, // uploading image path
+        [req.file], // uploading image path
         "image", // file type
         "product_category_images" // folder name
       );
@@ -186,7 +184,7 @@ const editCategory = async (req, res) => {
     const result = await ProductCategory.findByIdAndUpdate(id, {
       name: name,
       description: description,
-      category_icon: req.file.path ? category_icon : exists?.category_icon,
+      category_icon: req?.file?.path ? category_icon : exists?.category_icon,
     });
     if (!result) {
       // Delete Uploaded icon from cloudinary
@@ -199,7 +197,7 @@ const editCategory = async (req, res) => {
     }
 
     // Delete Uploaded icon from cloudinary
-    if (req.file && req.file.path)
+    if (req?.file && req?.file?.path)
       await deleteFromCloudinaryByUrl(exists.category_icon);
 
     // Category  updated Successfully

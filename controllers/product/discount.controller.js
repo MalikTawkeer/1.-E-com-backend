@@ -54,7 +54,7 @@ const updateDiscount = async (req, res) => {
       valid_until,
     });
     if (!updatedDiscount)
-      return res.status(200).json({ message: "Could not update discount." });
+      return res.status(200).json({ message: " discount not exists" });
 
     return res.status(200).json({ message: "Discount Updated Successfully." });
   } catch (error) {

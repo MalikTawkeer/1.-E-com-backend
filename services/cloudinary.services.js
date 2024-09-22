@@ -20,7 +20,12 @@ const deleteFromCloudinaryByUrl = async (imageUrlOrArray) => {
     // Iterate over the URLs and delete each image
     const deletePromises = urls.map(async (imageUrl) => {
       // Extract the part of the URL after '.../image/upload/'
-      const parts = imageUrl["url"].split("/image/upload/");
+      console.log(imageUrl);
+
+      const parts =
+        typeof imageUrl !== "string"
+          ? imageUrl["url"]?.split("/image/upload/")
+          : imageUrl?.split("/image/upload/");
       const pathWithVersion = parts[1];
 
       // Remove the version number and file extension
