@@ -1,4 +1,4 @@
-import mongoose, { startSession } from "mongoose";
+import mongoose, { model, startSession } from "mongoose";
 
 import ProductModel from "../../models/product/product.model.js";
 import CartModel from "../../models/cart/cart.model.js";
@@ -6,6 +6,7 @@ import CartItemModel from "../../models/cart/cart.items.model.js";
 import CustomerModel from "../../models/customer/customer.model.js";
 
 import addToCartSchema from "../../validations/addToCart.js";
+import { populate } from "dotenv";
 
 // Add item into a cart
 const addToCart = async (req, res) => {
@@ -255,13 +256,18 @@ const getCart = async (req, res) => {
           path: "product_id", // Path to the product within the cart items
           select: "name description product_images -_id ",
           model: "Product", // The model name of the product (replace with your actual model name)
+          populate: {
+            path: "product_images",
+            model: "ProductImage",
+            select: "url",
+          },
         },
       })
       .populate({ path: "cust_id", select: "name email" });
 
     return res.status(200).json({ message: "my Cart", myCart });
   } catch (error) {
-    console.log(error, "Error:: while removing item from cart");
+    console.log(error, "Error:: while getttig cart items");
 
     return res
       .status(500)

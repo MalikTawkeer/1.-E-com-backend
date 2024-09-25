@@ -30,7 +30,15 @@ const addProduct = async (req, res) => {
         .json({ message: "Product must have an image or images!" });
 
     // ** LATER EXTRACT ADMIN FROM Request
-    const { name, price, description, stock, category_id, admin_id } = req.body;
+    const {
+      name,
+      price,
+      description,
+      stock,
+      category_id,
+      admin_id,
+      discount_id = "null",
+    } = req.body;
     const product_images = [];
 
     // Start session
@@ -92,6 +100,7 @@ const addProduct = async (req, res) => {
       description,
       stock,
       category_id,
+      discount: discount_id,
       admin: admin_id,
     });
     // save the product using session
@@ -150,6 +159,7 @@ const getAllProducts = async (req, res) => {
         path: "admin",
         select: "email -_id", //send email only and dont send ids in repsonse
       })
+      .populate("discount")
       .exec();
 
     return res
@@ -179,6 +189,7 @@ const getProductById = async (req, res) => {
         path: "admin",
         select: "email -_id", //send email only and dont send ids in repsonse
       })
+      .populate("discount")
       .exec();
 
     if (!productInfo)
@@ -252,7 +263,15 @@ const updateProduct = async (req, res) => {
     });
 
     // ** LATER EXTRACT ADMIN FROM Request
-    const { name, price, description, stock, category_id, admin_id } = req.body;
+    const {
+      name,
+      price,
+      description,
+      stock,
+      category_id,
+      admin_id,
+      discount_id,
+    } = req.body;
     const product_images = [];
 
     session.startTransaction();
@@ -323,6 +342,7 @@ const updateProduct = async (req, res) => {
       description,
       stock,
       category_id,
+      discount: discount_id,
       admin: admin_id,
     }).session(session);
     // product.save({ session });

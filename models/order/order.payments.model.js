@@ -7,15 +7,15 @@ const orderPaymentSchema = new mongoose.Schema(
       required: true,
     },
 
-    payment_status: { type: String, required: true },
+    payment_status: { type: String, required: true, default: "pending" },
 
     payment_date: { type: Date, required: true },
 
     amount: { type: String, required: true },
 
-    transaction_id: { type: String, required: true },
+    transaction_id: { type: String },
 
-    gateway_response: { type: String, required: true },
+    gateway_response: { type: String },
 
     order_id: {
       type: mongoose.Schema.Types.ObjectId,
