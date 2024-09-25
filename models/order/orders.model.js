@@ -9,8 +9,7 @@ const orderSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      required: true,
-      default: "pending",
+      default: "PENDING",
     },
 
     order_date: {
@@ -24,6 +23,17 @@ const orderSchema = new mongoose.Schema(
       ref: "Customer",
     },
 
+    payment_mode: {
+      type: String,
+      required: true,
+    },
+
+    shipping_address: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "Shipping_Address",
+    },
+
     order_items: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -31,24 +41,6 @@ const orderSchema = new mongoose.Schema(
         ref: "OrderItem",
       },
     ],
-
-    payment_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: "OrderPayment",
-    },
-
-    shipping_address: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: "ShippingAddress",
-    },
-
-    billing_address: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: "BillingAddress",
-    },
   },
   {
     timestamps: true,

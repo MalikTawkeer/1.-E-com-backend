@@ -124,6 +124,10 @@ const viewProfile = async (req, res) => {
       .populate({
         path: "address",
         select: "-_id -customer",
+      })
+      .populate({
+        path: "shipping_addresses",
+        model: "Shipping_Address",
       });
     if (!info) return res.status(400).json("User doent exist!");
 

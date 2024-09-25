@@ -34,7 +34,7 @@ const customerSchema = new mongoose.Schema({
   orders: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "CustomerOrder",
+      ref: "Order",
     },
   ],
 
@@ -42,6 +42,13 @@ const customerSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Cart",
   },
+
+  shipping_addresses: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Shipping_Address",
+    },
+  ],
 });
 
 // Register user
