@@ -23,8 +23,21 @@ const productReviewSchema = new mongoose.Schema({
 
   review_images: [
     {
+      type: String,
+    },
+  ],
+
+  helpful_users: [
+    {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "ReviewImage",
+      ref: "Customer", // Track users who marked helpful
+    },
+  ],
+
+  unhelpful_users: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customer", // Track users who marked unhelpful
     },
   ],
 
@@ -41,6 +54,6 @@ const productReviewSchema = new mongoose.Schema({
   },
 });
 
-const ProductReview = mongoose.model("ProductReview", productReviewSchema);
+const ProductReview = mongoose.model("Product_Review", productReviewSchema);
 
 export default ProductReview;

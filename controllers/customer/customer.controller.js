@@ -48,14 +48,14 @@ const register = async (req, res) => {
       state: address?.state,
       customer: user?._id, // Link customer with Address
     });
-    newAddress.save({ session });
+    await newAddress.save({ session });
 
     // Associate address with customer
     user.address = newAddress._id;
-    user.save({ session });
+    await user.save({ session });
 
     await session.commitTransaction();
-    session.endSession();
+    await session.endSession();
 
     return res.status(201).json({
       message: "Customer registered!",
@@ -67,8 +67,8 @@ const register = async (req, res) => {
     });
   } catch (error) {
     console.log(error, "Error while registering user");
-    session.abortTransaction();
-    session.endSession();
+    await session.abortTransaction();
+    await session.endSession();
     return res
       .status(500)
       .json({ message: "internal server error", error: error });

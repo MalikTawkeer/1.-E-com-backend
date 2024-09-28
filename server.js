@@ -14,6 +14,7 @@ import customerRoutes from "./routes/customer.routes.js";
 import cartRoutes from "./routes/cart.routes.js";
 import shippingRoutes from "./routes/shipping.address.routes.js";
 import orderRoutes from "./routes/order.routes.js";
+import productReviewRoutes from "./routes/product.review.routes.js";
 
 const app = express();
 
@@ -52,6 +53,7 @@ app.use("/api/v1", discountRoutes);
 app.use("/api/v1/cart", cartRoutes);
 app.use("/api/v1/shipping-address", shippingRoutes);
 app.use("/api/v1/order", orderRoutes);
+app.use("/api/v1/product-review", productReviewRoutes);
 
 app.listen(process.env.PORT || 2000, () => {
   console.log(`Server started at port ${process.env.PORT}`);
