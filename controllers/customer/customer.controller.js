@@ -8,6 +8,8 @@ import CustomerModel from "../../models/customer/customer.model.js";
 import CustomerAddressModel from "../../models/customer/customer.address.model.js";
 import CategoryModel from "../../models/product/product.category.model.js";
 import ProductModel from "../../models/product/product.model.js";
+import BannerModel from "../../models/banner.model.js";
+import DiscountModel from "../../models/product/product.discount.model.js";
 
 import customerRegisterValidationSchema from "../../validations/customer.validation.js";
 import customerLoginValidationSchema from "../../validations/customer.login.validations.js";
@@ -206,9 +208,19 @@ const getHomeFeedData = async (req, res) => {
       })
       .limit(10);
 
-    return res
-      .status(200)
-      .json({ categories: someCategories, bestSellers: bestSellers });
+    const banners = await BannerModel.find({});
+
+    const featuredProducts = await ProductModel.find({}).limit(30);
+
+    const discounts = await DiscountModel.find({});
+
+    return res.status(200).json({
+      banners: banners,
+      discounts: discounts,
+      categories: someCategories,
+      bestSellers: bestSellers,
+      featured: featuredProducts,
+    });
     // some categories
     // 10 best sellers
     // explore
