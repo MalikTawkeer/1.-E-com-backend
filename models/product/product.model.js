@@ -24,6 +24,11 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
 
+  sales_count: {
+    type: Number,
+    default: 0,
+  },
+
   product_images: [
     {
       type: mongoose.Schema.Types.ObjectId,
