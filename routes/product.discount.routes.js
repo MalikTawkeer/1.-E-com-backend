@@ -4,6 +4,7 @@ import {
   addDiscount,
   deleteDiscount,
   getAllDiscounts,
+  getProductsByDiscountId,
   updateDiscount,
 } from "../controllers/product/discount.controller.js";
 
@@ -12,22 +13,15 @@ import authorize from "../middlewares/authorize.middleware.js";
 
 const router = express.Router();
 
-router.post("/addDiscount", checkAuth, authorize("admin"), addDiscount);
+router.post("/add", checkAuth, authorize("admin"), addDiscount);
 
-router.put(
-  "/updateDiscountById/:id",
-  checkAuth,
-  authorize("admin"),
-  updateDiscount
-);
+router.put("/update/:id", checkAuth, authorize("admin"), updateDiscount);
 
-router.get("/getAllDiscounts", checkAuth, authorize("admin"), getAllDiscounts);
+router.get("/discounts", checkAuth, authorize("admin"), getAllDiscounts);
 
-router.delete(
-  "/deleteDiscount/:id",
-  checkAuth,
-  authorize("admin"),
-  deleteDiscount
-);
+router.delete("/delete/:id", checkAuth, authorize("admin"), deleteDiscount);
+
+// Get products by discount id
+router.get("/products/:discount_id", getProductsByDiscountId);
 
 export default router;

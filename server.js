@@ -50,7 +50,7 @@ app.use("/api/v1/admin", adminRoutes);
 app.use("/api/v1/user", customerRoutes);
 app.use("/api/v1", productCategoryRoutes);
 app.use("/api/v1", productRoutes);
-app.use("/api/v1", discountRoutes);
+app.use("/api/v1/discount", discountRoutes);
 app.use("/api/v1/cart", cartRoutes);
 app.use("/api/v1/shipping-address", shippingRoutes);
 app.use("/api/v1/order", orderRoutes);
