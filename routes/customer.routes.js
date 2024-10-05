@@ -5,6 +5,7 @@ import {
   register,
   viewProfile,
   updateProfile,
+  getHomeFeedData,
 } from "../controllers/customer/customer.controller.js";
 
 import authenticateJWT from "../middlewares/auth.middleware.js";
@@ -33,5 +34,8 @@ router.put(
   authorize("customer"),
   updateProfile
 );
+
+// Homefeed api
+router.get("/homefeed", getHomeFeedData);
 
 export default router;

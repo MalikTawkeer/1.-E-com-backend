@@ -9,10 +9,6 @@ const productValidationSchema = Yup.object().shape({
     .required("Price is required")
     .positive("Price must be a positive number"),
 
-  discount: Yup.string()
-    .nullable()
-    .matches(/^[0-9a-fA-F]{24}$/, "Invalid Discount ID"), // Matches MongoDB ObjectID format
-
   description: Yup.string()
     .required("Description is required")
     .min(10, "Description must be at least 10 characters long"),
