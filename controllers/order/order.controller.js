@@ -7,7 +7,6 @@ import OrderModel from "../../models/order/orders.model.js";
 import OrderItemModel from "../../models/order/order.items.model.js";
 import ShippingAddressModel from "../../models/customer/shipping.address.model.js";
 import ProductModel from "../../models/product/product.model.js";
-import { populate } from "dotenv";
 
 // Place order
 const placeOrder = async (req, res) => {
@@ -71,6 +70,8 @@ const placeOrder = async (req, res) => {
 
       // Update product stock
       product.stock = product.stock - cartItem.quantity;
+      //Update best_seller count
+      product.sales_count = cartItem.quantity;
       await product.save({ session });
 
       return orderItem._id; // Return the order item ID

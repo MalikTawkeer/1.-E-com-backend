@@ -6,6 +6,8 @@ import config from "../../config/config.js";
 
 import CustomerModel from "../../models/customer/customer.model.js";
 import CustomerAddressModel from "../../models/customer/customer.address.model.js";
+import CategoryModel from "../../models/product/product.category.model.js";
+import ProductModel from "../../models/product/product.model.js";
 
 import customerRegisterValidationSchema from "../../validations/customer.validation.js";
 import customerLoginValidationSchema from "../../validations/customer.login.validations.js";
@@ -193,4 +195,28 @@ const updateProfile = async (req, res) => {
   }
 };
 
-export { register, login, viewProfile, updateProfile };
+// Get  home feed data
+const getHomeFeedData = async (req, res) => {
+  try {
+    const someCategories = await CategoryModel.find({}).limit(2);
+
+    const bestSellers = await ProductModel.find({})
+      .sort({
+        sales_count: -1,
+      })
+      .limit(10);
+
+    return res
+      .status(200)
+      .json({ categories: someCategories, bestSellers: bestSellers });
+    // some categories
+    // 10 best sellers
+    // explore
+    // Recommended
+  } catch (error) {
+    console.log(error, "Error while Getting homefeed data");
+    return res.status(500).json(error);
+  }
+};
+
+export { register, login, viewProfile, updateProfile, getHomeFeedData };
