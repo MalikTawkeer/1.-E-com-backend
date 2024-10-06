@@ -28,18 +28,18 @@ const limiter = rateLimit({
 
 connectDB();
 
+// Cors
+app.use(
+  cors({
+    origin: "http://localhost:5173", // any urls
+    credentials: true,
+  })
+);
+
 app.use(cookieParser());
 app.use(express.json());
 // Middleware to parse URL-encoded data
 app.use(express.urlencoded({ extended: true }));
-
-// Cors
-app.use(
-  cors({
-    origin: "http://localhost:5173/", // any urls
-    credentials: true,
-  })
-);
 
 // apply rate limiter to all routes
 app.use(limiter);
