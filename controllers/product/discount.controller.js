@@ -1,4 +1,5 @@
 import DiscountModel from "../../models/product/product.discount.model.js";
+import Product from "../../models/product/product.model.js";
 
 import discountValidationSchema from "../../validations/product.discount.validation.js";
 
@@ -94,4 +95,22 @@ const deleteDiscount = async (req, res) => {
   }
 };
 
-export { addDiscount, updateDiscount, getAllDiscounts, deleteDiscount };
+const getProductsByDiscountId = async (req, res) => {
+  try {
+    const { discount_id } = req.params;
+    const products = await Product.find({ discount: discount_id });
+
+    return res.status(200).json({ products: products });
+  } catch (error) {
+    console.log(error, "ERROR while getting items by discount id");
+    return res.status(500).json(error);
+  }
+};
+
+export {
+  addDiscount,
+  updateDiscount,
+  getAllDiscounts,
+  deleteDiscount,
+  getProductsByDiscountId,
+};

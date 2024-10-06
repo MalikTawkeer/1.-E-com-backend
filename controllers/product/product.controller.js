@@ -37,7 +37,7 @@ const addProduct = async (req, res) => {
       stock,
       category_id,
       admin_id,
-      discount_id = "null",
+      discount_id,
     } = req.body;
     const product_images = [];
 
@@ -100,7 +100,7 @@ const addProduct = async (req, res) => {
       description,
       stock,
       category_id,
-      discount: discount_id,
+      discount: discount_id ? discount_id : null,
       admin: admin_id,
     });
     // save the product using session
