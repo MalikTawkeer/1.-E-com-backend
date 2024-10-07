@@ -206,11 +206,20 @@ const getHomeFeedData = async (req, res) => {
       .sort({
         sales_count: -1,
       })
-      .limit(10);
+      .limit(10)
+      .populate("product_images")
+      .populate("discount")
+      .populate({ path: "category_id", select: "name category_icon" })
+      .populate({ path: "admin", select: "email" });
 
     const banners = await BannerModel.find({});
 
-    const featuredProducts = await ProductModel.find({}).limit(30);
+    const featuredProducts = await ProductModel.find({})
+      .limit(30)
+      .populate("product_images")
+      .populate("discount")
+      .populate({ path: "category_id", select: "name category_icon" })
+      .populate({ path: "admin", select: "email" });
 
     const discounts = await DiscountModel.find({});
 
