@@ -200,7 +200,7 @@ const updateProfile = async (req, res) => {
 // Get  home feed data
 const getHomeFeedData = async (req, res) => {
   try {
-    const someCategories = await CategoryModel.find({}).limit(2);
+    const someCategories = await CategoryModel.find({});
 
     const bestSellers = await ProductModel.find({})
       .sort({
