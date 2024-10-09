@@ -6,6 +6,8 @@ import {
   getAllProducts,
   getProductById,
   updateProduct,
+  getProductByCategoryId,
+  getProductsByDiscountId,
 } from "../controllers/product/product.controller.js";
 
 import { upload } from "../middlewares/upload.image.multer.js";
@@ -45,5 +47,11 @@ router.put(
   upload.array("files", 20),
   updateProduct
 );
+
+// Get producsts by category id
+router.get("/products/category/:category_id", getProductByCategoryId);
+
+// Get products by Discount _D
+router.get("/products/discount/:discount_id", getProductsByDiscountId);
 
 export default router;

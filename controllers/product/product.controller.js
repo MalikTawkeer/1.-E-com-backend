@@ -404,10 +404,74 @@ const updateProduct = async (req, res) => {
   }
 };
 
+// Get products by category id
+const getProductByCategoryId = async (req, res) => {
+  try {
+    const { category_id } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const skip = (page - 1) * limit;
+
+    const totalProducts = await Product.countDocuments({ category_id });
+
+    const products = await Product.find({ category_id })
+      .select("name description price stock")
+      .populate("discount")
+      .populate("product_images")
+      .skip(skip)
+      .limit(limit);
+
+    return res.status(200).json({
+      totalProducts,
+      currentPage: page,
+      totalPages: Math.ceil(totalProducts / limit),
+      products: products,
+    });
+  } catch (error) {
+    console.log(error, "Error while getting prodcuts by category id");
+    res.status(500).json(error);
+  }
+};
+
+// Get products by category id
+const getProductsByDiscountId = async (req, res) => {
+  try {
+    const { discount_id } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const skip = (page - 1) * limit;
+
+    const totalProducts = await Product.countDocuments({
+      discount: discount_id,
+    });
+
+    const products = await Product.find({ discount: discount_id })
+      .select("name description price stock")
+      .populate("discount")
+      .populate("product_images")
+      .skip(skip)
+      .limit(limit);
+
+    return res.status(200).json({
+      totalProducts,
+      currentPage: page,
+      totalPages: Math.ceil(totalProducts / limit),
+      products: products,
+    });
+  } catch (error) {
+    console.log(error, "Error while getting prodcuts by Discount id");
+    res.status(500).json(error);
+  }
+};
+
 export {
   addProduct,
   getAllProducts,
   getProductById,
   deleteProduct,
   updateProduct,
+  getProductByCategoryId,
+  getProductsByDiscountId,
 };
