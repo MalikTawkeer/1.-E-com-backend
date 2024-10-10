@@ -49,6 +49,10 @@ const customerSchema = new mongoose.Schema({
       ref: "Shipping_Address",
     },
   ],
+
+  reset_password_token: { type: String, default: undefined },
+
+  reset_password_expiry: { type: String, default: undefined },
 });
 
 // Register user
