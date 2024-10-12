@@ -4,6 +4,7 @@ import Product from "../../models/product/product.model.js";
 import ProductImage from "../../models/product/product.image.model.js";
 import Admin from "../../models/admin.model.js";
 import Category from "../../models/product/product.category.model.js";
+import ProdReviewModel from "../../models/product/product reviews/product.reviews.model.js";
 
 import productValidationSchema from "../../validations/product.validation.js";
 import deleteTempFile from "../../utils/delete.temp.image.file.js";
@@ -195,9 +196,27 @@ const getProductById = async (req, res) => {
     if (!productInfo)
       return res.status(404).json({ message: "Product not found!!" });
 
-    return res
-      .status(200)
-      .json({ message: "Successfully retrived product info.", productInfo });
+    const result = await ProdReviewModel.aggregate([
+      {
+        $match: { product_id: new mongoose.Types.ObjectId(id) }, // Filter reviews by product_id
+      },
+      {
+        $group: {
+          _id: null,
+          totalRating: { $sum: "$review_rating" }, // Sum all review ratings
+          count: { $sum: 1 }, // Count the number of reviews
+        },
+      },
+    ]);
+
+    const averageRating = result[0]?.totalRating / result[0]?.count;
+
+    return res.status(200).json({
+      message: "Successfully retrived product info.",
+      productInfo,
+      averageRating,
+      ratingCount: result[0]?.count,
+    });
 
     // validate and check id
     // get info
