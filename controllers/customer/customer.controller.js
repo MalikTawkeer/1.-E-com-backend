@@ -121,6 +121,8 @@ const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
+    const origin = req.get("origin") || req.get("referer");
+
     const user = await CustomerModel.findOne({ email });
     if (!user) return res.status(404).json("User not found!");
 
@@ -138,7 +140,7 @@ const forgotPassword = async (req, res) => {
 
       `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n` +
         `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
-        `http://${req.headers.host}/reset-password/${token}\n\n` +
+        `http://${origin}/reset-pass/${token}\n\n` +
         `If you did not request this, please ignore this email and your password will remain unchanged.\n`
     );
 
