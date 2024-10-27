@@ -11,14 +11,13 @@ import { populate } from "dotenv";
 // Add item into a cart
 const addToCart = async (req, res) => {
   const session = await mongoose.startSession();
+  session.startTransaction();
 
   try {
     // Validate data
     await addToCartSchema.validate(req.body, {
       abortEarly: true,
     });
-
-    session.startTransaction();
 
     const { product_id, quantity, price } = req.body;
 
@@ -109,7 +108,7 @@ const addToCart = async (req, res) => {
     // get data
   } catch (error) {
     await session.abortTransaction();
-    session.endSession();
+    await session.endSession();
     console.log(error, "Error while adding item into a cart!");
     res.status(500).json({ error });
   }
@@ -254,7 +253,7 @@ const getCart = async (req, res) => {
         path: "cart_items", // Path to the cart items
         populate: {
           path: "product_id", // Path to the product within the cart items
-          select: "name description product_images -_id ",
+          select: "name description product_images _id",
           model: "Product", // The model name of the product (replace with your actual model name)
           populate: {
             path: "product_images",
