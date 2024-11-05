@@ -4,6 +4,7 @@ import Product from "../../models/product/product.model.js";
 import ProductImage from "../../models/product/product.image.model.js";
 import Admin from "../../models/admin.model.js";
 import Category from "../../models/product/product.category.model.js";
+import ProdReviewModel from "../../models/product/product reviews/product.reviews.model.js";
 
 import productValidationSchema from "../../validations/product.validation.js";
 import deleteTempFile from "../../utils/delete.temp.image.file.js";
@@ -195,9 +196,27 @@ const getProductById = async (req, res) => {
     if (!productInfo)
       return res.status(404).json({ message: "Product not found!!" });
 
-    return res
-      .status(200)
-      .json({ message: "Successfully retrived product info.", productInfo });
+    const result = await ProdReviewModel.aggregate([
+      {
+        $match: { product_id: new mongoose.Types.ObjectId(id) }, // Filter reviews by product_id
+      },
+      {
+        $group: {
+          _id: null,
+          totalRating: { $sum: "$review_rating" }, // Sum all review ratings
+          count: { $sum: 1 }, // Count the number of reviews
+        },
+      },
+    ]);
+
+    const averageRating = result[0]?.totalRating / result[0]?.count;
+
+    return res.status(200).json({
+      message: "Successfully retrived product info.",
+      productInfo,
+      averageRating,
+      ratingCount: result[0]?.count,
+    });
 
     // validate and check id
     // get info
@@ -404,10 +423,74 @@ const updateProduct = async (req, res) => {
   }
 };
 
+// Get products by category id
+const getProductByCategoryId = async (req, res) => {
+  try {
+    const { category_id } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const skip = (page - 1) * limit;
+
+    const totalProducts = await Product.countDocuments({ category_id });
+
+    const products = await Product.find({ category_id })
+      .select("name description price stock")
+      .populate("discount")
+      .populate("product_images")
+      .skip(skip)
+      .limit(limit);
+
+    return res.status(200).json({
+      totalProducts,
+      currentPage: page,
+      totalPages: Math.ceil(totalProducts / limit),
+      products: products,
+    });
+  } catch (error) {
+    console.log(error, "Error while getting prodcuts by category id");
+    res.status(500).json(error);
+  }
+};
+
+// Get products by category id
+const getProductsByDiscountId = async (req, res) => {
+  try {
+    const { discount_id } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const skip = (page - 1) * limit;
+
+    const totalProducts = await Product.countDocuments({
+      discount: discount_id,
+    });
+
+    const products = await Product.find({ discount: discount_id })
+      .select("name description price stock")
+      .populate("discount")
+      .populate("product_images")
+      .skip(skip)
+      .limit(limit);
+
+    return res.status(200).json({
+      totalProducts,
+      currentPage: page,
+      totalPages: Math.ceil(totalProducts / limit),
+      products: products,
+    });
+  } catch (error) {
+    console.log(error, "Error while getting prodcuts by Discount id");
+    res.status(500).json(error);
+  }
+};
+
 export {
   addProduct,
   getAllProducts,
   getProductById,
   deleteProduct,
   updateProduct,
+  getProductByCategoryId,
+  getProductsByDiscountId,
 };

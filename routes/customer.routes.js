@@ -6,6 +6,8 @@ import {
   viewProfile,
   updateProfile,
   getHomeFeedData,
+  forgotPassword,
+  resetPassword,
 } from "../controllers/customer/customer.controller.js";
 
 import authenticateJWT from "../middlewares/auth.middleware.js";
@@ -18,6 +20,14 @@ router.post("/register", register);
 
 // Login customer
 router.post("/login", login);
+
+// Forgot password
+router.post("/forgot-password", forgotPassword);
+
+// Reset password
+router.post("/reset-password/:token", resetPassword);
+
+// Reset password
 
 // View Profile by id
 router.get(

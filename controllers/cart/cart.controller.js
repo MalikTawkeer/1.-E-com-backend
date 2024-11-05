@@ -8,17 +8,96 @@ import CustomerModel from "../../models/customer/customer.model.js";
 import addToCartSchema from "../../validations/addToCart.js";
 import { populate } from "dotenv";
 
+// Add various items into cart
+const addItemsToCart = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    // // Validate data
+    // await addToCartSchema.validate(req.body, {
+    //   abortEarly: true,
+    // });
+
+    const { items } = req.body; // Expecting items to be an array of { product_id, quantity, price }
+    const customer_id = req?.user?.id;
+
+    // Check if customer exists
+    const customer = await CustomerModel.findById(customer_id).session(session);
+    if (!customer) {
+      return res.status(404).json("Customer does not exist");
+    }
+
+    // If customer has no cart, create a new cart
+    let cart;
+    if (!customer?.cart_id) {
+      cart = await CartModel.create(
+        [{ cust_id: customer_id, cart_items: [] }],
+        { session }
+      );
+      customer.cart_id = cart[0]._id;
+      await customer?.save({ session });
+    } else {
+      cart = await CartModel.findById(customer.cart_id).session(session);
+    }
+
+    // Process each item in the request
+    const cartItemIds = [];
+    for (const { product_id, quantity, price } of items) {
+      // Check if product exists
+      const product = await ProductModel.findById(product_id).session(session);
+      if (!product) {
+        throw new Error(`Product with ID ${product_id} does not exist`);
+      }
+
+      // Check stock limit
+      if (quantity > product?.stock) {
+        throw new Error(
+          `Quantity for product ID ${product_id} exceeds available stock`
+        );
+      }
+
+      // Create and save the cart item
+      const cartItem = new CartItemModel({
+        price,
+        quantity,
+        product_id,
+      });
+      await cartItem?.save({ session });
+      cartItemIds?.push(cartItem._id);
+    }
+
+    // Update cart with new items
+    cart?.cart_items?.push(...cartItemIds);
+    console.log(cartItemIds,"mai");
+    
+    await cart?.save({ session });
+
+    // Commit the transaction and end the session
+    await session.commitTransaction();
+    session.endSession();
+
+    return res
+      .status(201)
+      .json({ message: "Items added to cart successfully" });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error("Error while adding items to cart:", error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
 // Add item into a cart
 const addToCart = async (req, res) => {
   const session = await mongoose.startSession();
+  session.startTransaction();
 
   try {
     // Validate data
     await addToCartSchema.validate(req.body, {
       abortEarly: true,
     });
-
-    session.startTransaction();
 
     const { product_id, quantity, price } = req.body;
 
@@ -109,7 +188,7 @@ const addToCart = async (req, res) => {
     // get data
   } catch (error) {
     await session.abortTransaction();
-    session.endSession();
+    await session.endSession();
     console.log(error, "Error while adding item into a cart!");
     res.status(500).json({ error });
   }
@@ -254,7 +333,7 @@ const getCart = async (req, res) => {
         path: "cart_items", // Path to the cart items
         populate: {
           path: "product_id", // Path to the product within the cart items
-          select: "name description product_images -_id ",
+          select: "name description product_images _id",
           model: "Product", // The model name of the product (replace with your actual model name)
           populate: {
             path: "product_images",
@@ -275,4 +354,10 @@ const getCart = async (req, res) => {
   }
 };
 
-export { addToCart, removeItemFromCart, updateCartItemQnty, getCart };
+export {
+  addToCart,
+  addItemsToCart,
+  removeItemFromCart,
+  updateCartItemQnty,
+  getCart,
+};

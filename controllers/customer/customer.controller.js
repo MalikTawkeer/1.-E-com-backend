@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 
 import config from "../../config/config.js";
 
@@ -13,6 +14,7 @@ import DiscountModel from "../../models/product/product.discount.model.js";
 
 import customerRegisterValidationSchema from "../../validations/customer.validation.js";
 import customerLoginValidationSchema from "../../validations/customer.login.validations.js";
+import sendEmail from "../../utils/email.sender.js";
 
 // JWT Token age
 const JWT_MAX_AGE = "1d";
@@ -111,6 +113,91 @@ const login = async (req, res) => {
     return res
       .status(500)
       .json({ message: "internal server error", error: error });
+  }
+};
+
+// Forgot Password
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const origin = req.get("origin") || req.get("referer");
+
+    const user = await CustomerModel.findOne({ email });
+    if (!user) return res.status(404).json("User not found!");
+
+    const token = crypto.randomBytes(20).toString("hex");
+
+    user.reset_password_token = token;
+    user.reset_password_expiry = Date.now() + 3600000; // 1 hour
+    await user.save();
+
+    // Send email
+    const emailStatus = await sendEmail(
+      "Kashmir Baazar",
+      user.email,
+      "Password reset",
+
+      `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n` +
+        `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
+        `http://${origin}/reset-pass/${token}\n\n` +
+        `If you did not request this, please ignore this email and your password will remain unchanged.\n`
+    );
+
+    // Send response to user
+    return res.status(200).json({
+      message: "Password reset email sent, please check email",
+      emailStatus,
+      status: true,
+    });
+
+    // check emil exists
+    // generate token
+    // store tkn into DB
+    // send email
+    // succss
+  } catch (error) {
+    console.log(error, "Error while forgoting pass");
+    res.status(500).json(error);
+  }
+};
+
+// Reset password
+const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    const user = await CustomerModel.findOne({
+      reset_password_token: token,
+      reset_password_expiry: { $gt: Date.now() },
+    });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "Password link expired or Invalid token" });
+    }
+
+    const { newPassword } = req.body;
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+    user.reset_password_token = undefined;
+    user.reset_password_expiry = undefined;
+    await user.save();
+
+    return res.status(200).json({ message: "Password has been reset" });
+
+    // destructre token
+    // find for token and check token exp is gtr than curr data in DB
+    // destructure newPassword
+    // hash the password
+    // undefine tkn and time
+    // store into DB
+    // send success
+  } catch (error) {
+    console.log(error, "Error while resetting password!");
+    res.status(500).json(error);
   }
 };
 
@@ -240,4 +327,12 @@ const getHomeFeedData = async (req, res) => {
   }
 };
 
-export { register, login, viewProfile, updateProfile, getHomeFeedData };
+export {
+  register,
+  login,
+  forgotPassword,
+  resetPassword,
+  viewProfile,
+  updateProfile,
+  getHomeFeedData,
+};
