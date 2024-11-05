@@ -4,6 +4,7 @@ import {
   removeItemFromCart,
   updateCartItemQnty,
   getCart,
+  addItemsToCart,
 } from "../controllers/cart/cart.controller.js";
 
 import checkAuth from "../middlewares/auth.middleware.js";
@@ -13,6 +14,9 @@ const router = express.Router();
 
 // Add item into a Cart
 router.post("/add", checkAuth, authorize("customer"), addToCart);
+
+// Add item into a Cart
+router.post("/add-all", checkAuth, authorize("customer"), addItemsToCart);
 
 // Get cart items
 router.get("/items", checkAuth, authorize("customer"), getCart);
